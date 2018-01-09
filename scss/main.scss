@@ -1,0 +1,20 @@
+@import "config/variables.scss";
+@import "config/mixins.scss";
+
+// media 
+@import "layout/media.scss";
+
+// resolutions 
+$tablets: 768px;
+$phones: 480px; 
+$horizontal: 530px;
+$iphone: 350px;
+
+//Base
+@import "layout/fonts.scss";
+@import "layout/base.scss";
+@import "layout/adjustment.scss";
+
+//sections
+@import "section/header.scss";
+@import "section/hamburger__menu.scss";

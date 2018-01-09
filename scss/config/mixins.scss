@@ -1,0 +1,28 @@
+@mixin circle($width, $color) {
+    width: $width;
+    height: $width;
+    border-radius: $width/2;
+    background: $color;
+}
+@function rem($px) {
+    @return $px / 16px + 0rem;
+}
+@mixin clearfix {
+	&:after, &:before {
+			display: table;
+			content: "";
+		} 
+		&:after {
+			clear: both;
+		}
+}
+@mixin ProximaNova($style: ProximaNova) {
+    @if $style == bold {
+        font-family: 'ProximaNovaBold' , Helvetica , sans-serif;
+    }
+    
+    @if $style == regular {
+        font-family: 'ProximaNovaRegular' , Helvetica , sans-serif;
+    }
+    
+}

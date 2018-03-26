@@ -10,6 +10,7 @@ gulp.task('serve', function() {
             baseDir: "../build/"
         }
     });
+    browserSync.watch('../build', browserSync.reload)
     
 });
 
@@ -19,7 +20,7 @@ gulp.task('sass', function () {
 	.pipe(gp.sourcemaps.init())
 	.pipe(gp.sass().on('error', sass.logError))
 	.pipe(gp.autoprefixer({
-            browsers: ['last 5 versions']
+            browsers: ['last 10 versions']
         }))
 	.on("error", gp.notify.onError({
         message: "Error: <%= error.message %>",
@@ -27,10 +28,7 @@ gulp.task('sass', function () {
       }))
 	.pipe(gp.csso())
 	.pipe(gp.sourcemaps.write())
-	.pipe(gulp.dest('css/'))
-	.pipe(browserSync.reload({
-		stream: true
-	}));
+	.pipe(gulp.dest('css/'));
 });
 
 gulp.task('watch', function() {

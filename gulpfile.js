@@ -1,8 +1,10 @@
 'use strict';
-var gulp = require('gulp'),
-    sass = require("gulp-sass"),
-	gp   = require('gulp-load-plugins')(),
-	browserSync = require('browser-sync').create();
+var gulp = 			require('gulp'),
+    sass = 			require("gulp-sass"),
+	gp = 			require('gulp-load-plugins')(),
+	browserSync = 	require('browser-sync').create(),
+	uglify = 		require('gulp-uglify'),
+	pump = 			require('pump');
 
 gulp.task('serve', function() {
     browserSync.init({
@@ -12,6 +14,12 @@ gulp.task('serve', function() {
     });
     browserSync.watch('../build', browserSync.reload)
     
+});
+
+gulp.task('compress', function () {
+ return gulp.src('js/*.js')
+  .pipe(uglify())
+  .pipe(gulp.dest('minjs'));
 });
 
 
@@ -36,6 +44,7 @@ gulp.task('watch', function() {
 });
 gulp.task('default',gulp.series(
 	gulp.parallel('sass'),
+	gulp.parallel('compress'),
 	gulp.parallel('watch','serve')
 	
 

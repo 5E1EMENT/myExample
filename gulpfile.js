@@ -4,7 +4,8 @@ var gulp = 			require('gulp'),
 	gp = 			require('gulp-load-plugins')(),
 	browserSync = 	require('browser-sync').create(),
 	uglify = 		require('gulp-uglify'),
-	pump = 			require('pump');
+	pump = 			require('pump'),
+	imagemin = 		require('gulp-imagemin');
 
 gulp.task('serve', function() {
     browserSync.init({
@@ -15,6 +16,22 @@ gulp.task('serve', function() {
     browserSync.watch('../build', browserSync.reload)
     
 });
+
+gulp.task('imagemin', () =>
+    gulp.src('img/*')
+        .pipe(imagemin([
+    imagemin.gifsicle({interlaced: true}),
+    imagemin.jpegtran({progressive: true}),
+    imagemin.optipng({optimizationLevel: 5}),
+    imagemin.svgo({
+        plugins: [
+            {removeViewBox: false},
+            {cleanupIDs: false}
+        ]
+    })
+]))
+        .pipe(gulp.dest('imgmin/'))
+);
 
 gulp.task('compress', function () {
  return gulp.src('js/*.js')
@@ -44,6 +61,7 @@ gulp.task('watch', function() {
 });
 gulp.task('default',gulp.series(
 	gulp.parallel('sass'),
+	gulp.parallel('imagemin'),
 	gulp.parallel('compress'),
 	gulp.parallel('watch','serve')
 	

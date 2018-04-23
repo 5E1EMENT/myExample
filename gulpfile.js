@@ -59,6 +59,7 @@ gulp.task('sass', function () {
 gulp.task('watch', function() {
 	gulp.watch('scss/**/*.scss',gulp.series('sass'));
 	gulp.watch('img/*',gulp.series('imagemin'));
+	gulp.watch('js/*.js',gulp.series('compress'));
 });
 gulp.task('default',gulp.series(
 	gulp.parallel('sass'),

@@ -2,7 +2,6 @@
 $(document).ready(function() {
 	$('#form').submit(function() { // проверка на пустоту заполненных полей. Атрибут html5 — required не подходит (не поддерживается Safari)
 		if (document.form.name.value == '' || document.form.phone.value == '' ) {
-			
 			valid = false;
 			return valid;
 		}
@@ -12,11 +11,6 @@ $(document).ready(function() {
 			data: $(this).serialize()
 		}).done(function() {
 			swal("Good job!", "You clicked the button!", "success");
-		});
-		$.ajax({
-			type: "POST",
-			url: "mail.php",
-			data: $(this).serialize()
 		}).fail(function(){
 			swal({
   				title: "Something wrong",
@@ -24,8 +18,10 @@ $(document).ready(function() {
   				icon: "error",
 		});
 		});
+		
 		return false;
 	});
+
 });
 
 // Закрыть попап «спасибо»

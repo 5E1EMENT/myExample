@@ -10,6 +10,8 @@ $(document).ready(function() {
 			url: "mail.php",
 			data: $(this).serialize()
 		}).done(function() {
+			$(this).find('input').val('');
+			$('#form').trigger('reset');
 			swal("Good job!", "You clicked the button!", "success");
 		}).fail(function(){
 			swal({

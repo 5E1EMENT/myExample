@@ -73,7 +73,7 @@ gulp.task('compress', function () {
 gulp.task('scripts', function() {
     return gulp.src(['node_modules/jquery/dist/jquery.min.js',
         'node_modules/slick-carousel/slick/slick.min.js',
-    'node_modules/jquery.maskedinput.js'])
+    'src/static/js/jquery.maskedinput.js'])
         .pipe(concat('libs.min.js'))
         .pipe(gulp.dest('build/minjs/'))
         .pipe(browserSync.reload({

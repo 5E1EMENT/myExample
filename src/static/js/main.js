@@ -10,9 +10,9 @@ $(document).ready(function() {
 			url: "mail.php",
 			data: $(this).serialize()
 		}).done(function() {
+			swal("Good job!", "You clicked the button!", "success");
 			$(this).find('input').val('');
 			$('#form').trigger('reset');
-			swal("Good job!", "You clicked the button!", "success");
 		}).fail(function(){
 			swal({
   				title: "Something wrong",
@@ -26,11 +26,12 @@ $(document).ready(function() {
 
 });
 
-// Закрыть попап «спасибо»
-
 
 // Маска ввода номера телефона (плагин maskedinput)
 $(function($){
 	$('[name="phone"]').mask("+7(999) 999-9999");
 });
 
+$(document).ready(function () {
+	$('.slider').slick();
+});

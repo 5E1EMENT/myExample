@@ -89,7 +89,7 @@ gulp.task('watch', function() {
 	gulp.watch('src/static/js/*.js',gulp.series('compress'));
 });
 gulp.task('default',gulp.series(
-	gulp.parallel('compress','scripts','imagemin','sass'),
+	gulp.parallel('pug','compress','scripts','imagemin','sass'),
 	gulp.parallel('watch','serve')
 	
 

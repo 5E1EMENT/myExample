@@ -5,8 +5,13 @@ var gulp = 			require('gulp'),
 	browserSync = 	require('browser-sync').create(),
 	uglify = 		require('gulp-uglify'),
 	pump = 			require('pump'),
-	imagemin = 		require('gulp-imagemin'),
-    concat =        require('gulp-concat');
+    tinypng =       require('gulp-tinypng-compress'),
+    concat =        require('gulp-concat'),
+    svgmin =        require('gulp-svgmin'),
+    cheerio =       require('gulp-cheerio'),
+    replace =       require('gulp-replace'),
+    svgSprite =     require('gulp-svg-sprites'),
+    notify =        require("gulp-notify");
 
 gulp.task('pug', function () {
     return gulp.src('src/pug/pages/*.pug')
@@ -21,6 +26,10 @@ gulp.task('sass', function () {
     return gulp.src('src/static/scss/main.scss')
         .pipe(gp.sourcemaps.init())
         .pipe(gp.sass().on('error', sass.logError))
+        .on("error", gp.notify.onError({
+            message: "Error: <%= error.message %>",
+            title: "Error!!!CSS"
+        }))
         .pipe(gp.autoprefixer({
             browsers: ['last 10 versions'],
             cascade: false
@@ -46,25 +55,27 @@ gulp.task('serve', function() {
 
 });
 
-gulp.task('imagemin', () =>
-    gulp.src('src/static/img/*')
-        .pipe(imagemin([
-    imagemin.gifsicle({interlaced: true}),
-    imagemin.jpegtran({progressive: true}),
-    imagemin.optipng({optimizationLevel: 5}),
-    imagemin.svgo({
-        plugins: [
-            {removeViewBox: false},
-            {cleanupIDs: false}
-        ]
-    })
-]))
-        .pipe(gulp.dest('build/imgmin/'))
-);
+
+gulp.task('tinypng', function () {
+   return gulp.src('src/static/img/*.{png,jpg,jpeg,JPG}')
+        .pipe(tinypng({
+            key: 'rRPO2Seavi9OVQAFZL3xe2nzhyCsgRhh',
+            sigFile: 'images/.tinypng-sigs',
+            log: true,
+            parrallel: true
+        }))
+        .pipe(gulp.dest('build/img'))
+        .on('end',browserSync.reload);
+});
 
 gulp.task('compress', function () {
  return gulp.src('src/static/js/*.js')
   .pipe(uglify())
+     .on("error", gp.notify.onError({
+         message: "Error: <%= error.message %>",
+         title: "Error!!!"
+     }))
+
   .pipe(gulp.dest('build/minjs'));
 });
 
@@ -76,21 +87,53 @@ gulp.task('scripts', function() {
     'src/static/js/jquery.maskedinput.js'])
         .pipe(concat('libs.min.js'))
         .pipe(gulp.dest('build/minjs/'))
+
         .pipe(browserSync.reload({
             stream:true
         }));
 });
 
+gulp.task('svg', function () {
+    return gulp.src('src/static/img/svg/*.svg')
+    // minify svg
+        .pipe(svgmin({
+            js2svg: {
+                pretty: true
+            }
+        }))
+        // remove all fill and style declarations in out shapes
+        .pipe(cheerio({
+            run: function ($) {
+                $('[fill]').removeAttr('fill');
+                $('[style]').removeAttr('style');
+                $('[stroke]').removeAttr('stroke');
+            },
+            parserOptions: { xmlMode: true }
+        }))
+        // cheerio plugin create unnecessary string '>', so replace it.
+        .pipe(replace('&gt;', '>'))
+        // build svg sprite
+        .pipe(svgSprite({
+                mode: {
+                    symbol: {
+                        sprite: "sprite.svg"
+                    }
+                }
+            }
+        ))
+        .pipe(gulp.dest('build/img'));
+});
 
 gulp.task('watch', function() {
     gulp.watch('src/pug/**/*.pug', gulp.series('pug'));
 	gulp.watch('src/static/scss/**/*.scss',gulp.series('sass'));
-	gulp.watch('src/static/img/*',gulp.series('imagemin'));
+	gulp.watch('src/static/img/*',gulp.series('tinypng'));
 	gulp.watch('src/static/js/*.js',gulp.series('compress'));
+	gulp.watch('src/static/img/svg/*.svg',gulp.series('svg'));
 });
+
 gulp.task('default',gulp.series(
-	gulp.parallel('pug','compress','scripts','imagemin','sass'),
+	gulp.parallel('tinypng','pug','compress','scripts','sass', 'svg'),
 	gulp.parallel('watch','serve')
-	
 
 	));

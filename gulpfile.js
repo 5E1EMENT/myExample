@@ -76,7 +76,10 @@ gulp.task('compress', function () {
          title: "Error!!!"
      }))
 
-  .pipe(gulp.dest('build/minjs'));
+  .pipe(gulp.dest('build/minjs'))
+     .pipe(browserSync.reload({
+         stream:true
+     }));;
 });
 
 
@@ -84,7 +87,7 @@ gulp.task('compress', function () {
 gulp.task('scripts', function() {
     return gulp.src(['node_modules/jquery/dist/jquery.min.js',
         'node_modules/slick-carousel/slick/slick.min.js',
-    'src/static/js/jquery.maskedinput.js'])
+    'src/static/js/libs/jquery.maskedinput.js'])
         .pipe(concat('libs.min.js'))
         .pipe(gulp.dest('build/minjs/'))
 
@@ -104,24 +107,24 @@ gulp.task('svg', function () {
         // remove all fill and style declarations in out shapes
         .pipe(cheerio({
             run: function ($) {
-                $('[fill]').removeAttr('fill');
-                $('[style]').removeAttr('style');
-                $('[stroke]').removeAttr('stroke');
+
             },
             parserOptions: { xmlMode: true }
         }))
         // cheerio plugin create unnecessary string '>', so replace it.
         .pipe(replace('&gt;', '>'))
         // build svg sprite
-        .pipe(svgSprite({
-                mode: {
-                    symbol: {
-                        sprite: "sprite.svg"
-                    }
-                }
-            }
-        ))
-        .pipe(gulp.dest('build/img'));
+        .pipe(svgSprite(({
+            mode: "symbols",
+            svg: {
+                sprite: "svg.svg",
+
+            },
+            baseSize: 32,
+            selector: "icon-%f"
+
+        })))
+        .pipe(gulp.dest('build/img/'));
 });
 
 gulp.task('watch', function() {

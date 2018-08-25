@@ -1,3 +1,9 @@
+//Подключение плагинов
+include ../mixin
+
+    //svg
+    //+icon('cucumber')
+                //+icon('beef','green_mod')
 doctype html
 html
     head
@@ -7,13 +13,19 @@ html
     title Example
     body
         .container
+            +icon('cucumber')
+            +icon('beef','green_mod')
+
             .slider
                 .slick-item
-                    h2  helloo
+
+                    include ../modules/header
                 .slick-item
                     h2 hi
                 .slick-item
                     h3 yoyo
+
+
 
 
     script(src="minjs/libs.min.js")

@@ -11,7 +11,8 @@ var gulp = 			require('gulp'),
     cheerio =       require('gulp-cheerio'),
     replace =       require('gulp-replace'),
     svgSprite =     require('gulp-svg-sprites'),
-    notify =        require("gulp-notify");
+    notify =        require("gulp-notify"),
+    babel =         require('gulp-babel');
 
 gulp.task('pug', function () {
     return gulp.src('src/pug/pages/*.pug')
@@ -80,11 +81,11 @@ gulp.task('tinypng', function () {
 
 gulp.task('compress', function () {
  return gulp.src('src/static/js/*.js')
-  .pipe(uglify())
-     .on("error", gp.notify.onError({
-         message: "Error: <%= error.message %>",
-         title: "Error!!!"
+     .pipe(babel({
+         presets: ['@babel/env']
      }))
+  .pipe(uglify())
+
 
   .pipe(gulp.dest('build/minjs'))
      .pipe(browserSync.reload({

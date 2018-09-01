@@ -115,14 +115,12 @@ gulp.task('svg', function () {
         .pipe(replace('&gt;', '>'))
         // build svg sprite
         .pipe(svgSprite(({
+            baseSize: 10,
             mode: "symbols",
             svg: {
                 sprite: "svg.svg",
 
-            },
-            baseSize: 32,
-            selector: "icon-%f"
-
+            }
         })))
         .pipe(gulp.dest('build/img/'));
 });

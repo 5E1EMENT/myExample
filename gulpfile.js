@@ -46,6 +46,16 @@ gulp.task('sass', function () {
         }));
 });
 
+gulp.task('fonts', function () {
+    gulp.src('src/static/fonts/*.*') //Выберем файлы по нужному пути
+        .pipe(gulp.dest('build/fonts')); //Выплюнем их в папку build
+});
+gulp.task('php', function () {
+    gulp.src('src/static/mail.php') //Выберем файлы по нужному пути
+        .pipe(gulp.dest('build/')); //Выплюнем их в папку build
+});
+
+
 gulp.task('serve', function() {
     browserSync.init({
         server: {
@@ -131,6 +141,7 @@ gulp.task('watch', function() {
 	gulp.watch('src/static/img/*',gulp.series('tinypng'));
 	gulp.watch('src/static/js/*.js',gulp.series('compress'));
 	gulp.watch('src/static/img/svg/*.svg',gulp.series('svg'));
+
 });
 
 gulp.task('default',gulp.series(

@@ -1,0 +1,138 @@
+
+@mixin aspect-ratio($arglist... /*$width/$ratio, $height*/){
+  $map : keywords($arglist);
+  $height: map-get($map, height) or nth-or-null($arglist, 2);
+  $width:  map-get($map, width)  or nth-or-null($arglist, 1);
+  $ratio:  map-get($map, ratio)  or if($width and $height, $width/$height, nth-or-null($arglist, 1)) or 1;
+  $padding: 1/$ratio * 100%;
+  &:before { content: ''; float:left; padding-bottom: $padding; }
+  &:after  { content: ''; display:table; clear: both; }
+}
+// Helper function
+// Return null rather than throwing an error if index is outside list range.
+@function nth-or-null($list, $index) {
+  @return if(length($list) >= $index, nth($list, $index), null);
+}
+
+
+
+
+
+
+
+//
+//  Function to create an optimized svg url
+//
+@function svg-url($svg){
+  //
+  //  Add missing namespace
+  //
+  @if not str-index($svg,xmlns) {
+    $svg: str-replace($svg, '<svg','<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  //
+  //  Chunk up string in order to avoid
+  //  "stack level too deep" error
+  //
+  $encoded:'';
+  $slice: 2000;
+  $index: 0;
+  $loops: ceil(str-length($svg)/$slice);
+  @for $i from 1 through $loops {
+    $chunk: str-slice($svg, $index, $index + $slice - 1);
+    //
+    //   Encode
+    //
+    $chunk: str-replace($chunk,'"', '\'');
+    $chunk: str-replace($chunk,'%', '%25');
+    $chunk: str-replace($chunk,'&', '%26');
+    $chunk: str-replace($chunk,'#', '%23');
+    $chunk: str-replace($chunk,'{', '%7B');
+    $chunk: str-replace($chunk,'}', '%7D');
+    $chunk: str-replace($chunk,'<', '%3C');
+    $chunk: str-replace($chunk,'>', '%3E');
+
+    //
+    //    The maybe list
+    //
+    //    Keep size and compile time down
+    //    ... only add on documented fail
+    //
+    //  $chunk: str-replace($chunk, '|', '%7C');
+    //  $chunk: str-replace($chunk, '[', '%5B');
+    //  $chunk: str-replace($chunk, ']', '%5D');
+    //  $chunk: str-replace($chunk, '^', '%5E');
+    //  $chunk: str-replace($chunk, '`', '%60');
+    //  $chunk: str-replace($chunk, ';', '%3B');
+    //  $chunk: str-replace($chunk, '?', '%3F');
+    //  $chunk: str-replace($chunk, ':', '%3A');
+    //  $chunk: str-replace($chunk, '@', '%40');
+    //  $chunk: str-replace($chunk, '=', '%3D');
+
+    $encoded: #{$encoded}#{$chunk};
+    $index: $index + $slice;
+  }
+  @return url("data:image/svg+xml,#{$encoded}");
+}
+
+//  Background svg mixin
+@mixin background-svg($svg){
+  background-image: svg-url($svg);
+}
+
+//  Helper function to replace characters in a string
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+  @return if($index,
+          str-slice($string, 1, $index - 1) + $replace +
+        str-replace(str-slice($string, $index +
+        str-length($search)), $search, $replace),
+          $string);
+}
+
+
+
+
+
+
+
+
+
+
+//
+// Same as above but without loops
+//
+// DO NOT USE THIS YET
+// – When used on large svg's it will break in Ruby Sass
+//   due to the mentioned "SystemStackError: stack level too deep"
+//
+// @function old_svg-url($svg){
+//    //  Add missing namespace
+//    @if not str-index($svg,xmlns) {
+//        $svg: str-replace($svg, '<svg','<svg xmlns="http://www.w3.org/2000/svg"');
+//    }
+//    $svg: str-replace($svg,'"','\'');
+//    $svg: str-replace($svg,'<','%3C');
+//    $svg: str-replace($svg,'>','%3E');
+//    $svg: str-replace($svg,'&','%26');
+//    $svg: str-replace($svg,'#','%23');
+//    @return url("data:image/svg+xml,#{$svg}");
+// }
+
+$svg-cartman:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512.00102"><path d="M486.613 0h-58.5c-13.754 0-24.941 11.188-24.941 24.941v21.47c-44.777 49.417-102.77 70.706-192.723 70.972-28.742.082-56.879 11.918-77.199 32.469a109.962 109.962 0 0 0-8.434 9.59H59.47C26.679 159.441 0 186.116 0 218.91c0 32.79 26.68 59.469 59.469 59.469h58.562c11.285 18.535 28.078 33.379 48.059 42.219-1.496 31.574-9.867 60.492-23.996 82.28-16.422 25.325-32.461 29.11-40.563 29.11-22.058 0-40.004 17.946-40.004 40.004 0 22.063 17.946 40.008 40.004 40.008 42.024 0 80.27-23.293 107.696-65.586 20.691-31.906 33.343-72.312 36.41-115.48 31.14 2.343 57.816 7.828 80.824 16.613 29.527 11.27 54.656 28.64 76.707 53.012v12.32c0 13.75 11.191 24.941 24.941 24.941h58.5c13.754 0 24.942-11.191 24.942-24.941V24.94C511.555 11.187 500.363 0 486.613 0zM59.47 248.371c-16.246 0-29.461-13.219-29.461-29.46 0-16.247 13.215-29.466 29.46-29.466h48.93a103.132 103.132 0 0 0-5.761 34.946 105.539 105.539 0 0 0 2.96 23.98zm124.58 181.715c-21.707 33.476-51.012 51.91-82.52 51.91-5.511 0-10-4.488-10-10.004 0-5.515 4.489-10 10-10 14.192 0 41.598-5.558 65.739-42.789 15.933-24.57 25.785-56.164 28.39-90.41 4.29.531 8.649.809 13.07.809 2.333 0 4.63.027 6.918.054-2.793 37.817-13.761 72.93-31.597 100.43zm219.11-71.422c-19.716-16.894-41.528-29.812-65.997-39.152-35.105-13.399-77.117-19.914-128.434-19.914-41.605 0-75.738-33.852-76.09-75.461-.163-19.817 7.63-38.703 21.95-53.188 14.742-14.914 35.137-23.5 55.95-23.562 50.753-.149 92.366-6.746 127.214-20.168 24.219-9.328 45.844-22.184 65.414-38.95zm78.386 49.145h-48.371V30.004h48.37zm0 0"></path></svg>';
+.icon {
+  width: 50px;
+  height: 50px;
+}
+.advantages-icon {
+  @include aspect-ratio();
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  position: relative;
+  @include background-svg($svg-cartman); // <= here :-)
+  background-size: cover;
+  background-repeat:no-repeat;
+  background-position:50% 50%;
+
+}

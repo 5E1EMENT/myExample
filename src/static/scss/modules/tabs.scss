@@ -1,0 +1,68 @@
+.advantages-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: rem(60px);
+}
+.advantages-tab {
+  cursor: pointer;
+  width: rem(270px);
+  height: rem(125px);
+  text-align: center;
+  background-color: $lightGray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  &:active {
+    .advantages-tab__name {
+      color: white;
+      @include Monstserrat(regular);
+      font-size: rem(16px);
+      text-transform: uppercase;
+    }
+
+  }
+  &__name {
+    color: $darkGray;
+    @include Monstserrat(regular);
+    font-size: rem(16px);
+    text-transform: uppercase;
+    margin-top: rem(20px);
+  }
+  &:before {
+    content: '';
+    display: block;
+    position: absolute; /* Абсолютное позиционирование */
+    height: 50px;
+    bottom: -185px;
+    border: 136px solid transparent;
+    border-top: 50px solid #eee;
+
+  }
+}
+
+.active-tab {
+
+  background-color: $orange;
+  &:before {
+    content: '';
+    display: block;
+    position: absolute; /* Абсолютное позиционирование */
+    height: 50px;
+    bottom: -185px;
+    border: 136px solid transparent;
+    border-top: 50px solid $orange;
+
+  }
+  .advantages-tab__name {
+    color: #fff;
+  }
+}
+.advantages-text {
+  display: none;
+}
+.active-content {
+  display: block;
+}
+

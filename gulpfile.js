@@ -118,7 +118,8 @@ gulp.task('svg', function () {
         // remove all fill and style declarations in out shapes
         .pipe(cheerio({
             run: function ($) {
-
+                $('[fill]').removeAttr('fill');
+                $('[style]').removeAttr('style');
             },
             parserOptions: { xmlMode: true }
         }))
@@ -145,8 +146,13 @@ gulp.task('watch', function() {
 
 });
 
-gulp.task('default',gulp.series(
-	gulp.parallel('tinypng','pug','compress','scripts','sass', 'svg'),
-	gulp.parallel('watch','serve')
+gulp.task('build',gulp.series(
+    gulp.parallel('tinypng','pug','compress','scripts','sass', 'svg'),
+    gulp.parallel('watch','serve')
 
-	));
+));
+gulp.task('dev',gulp.series(
+    gulp.parallel('pug','compress','scripts','sass', 'svg'),
+    gulp.parallel('watch','serve')
+
+));
